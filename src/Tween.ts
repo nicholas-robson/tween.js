@@ -7,17 +7,17 @@
  * Thank you all, you're awesome!
  */
 
+import type {EasingFunction} from './Easing'
 import Easing from './Easing'
+import type {InterpolationFunction} from './Interpolation'
 import Interpolation from './Interpolation'
 import {mainGroup} from './mainGroup'
 import Sequence from './Sequence'
 import now from './Now'
-
-import type {EasingFunction} from './Easing'
-import type {InterpolationFunction} from './Interpolation'
 import type Group from './Group'
+import EventEmitter from 'eventemitter3'
 
-export class Tween<T extends UnknownProps> {
+export class Tween<T extends UnknownProps = UnknownProps> extends EventEmitter {
 	private _isPaused = false
 	private _pauseStart = 0
 	private _valuesStart: UnknownProps = {}
@@ -36,18 +36,15 @@ export class Tween<T extends UnknownProps> {
 	private _interpolationFunction: InterpolationFunction = Interpolation.Linear
 	// eslint-disable-next-line
 	private _chainedTweens: Array<Tween<any>> = []
-	private _onStartCallback?: (object: T) => void
 	private _onStartCallbackFired = false
-	private _onEveryStartCallback?: (object: T) => void
 	private _onEveryStartCallbackFired = false
-	private _onUpdateCallback?: (object: T, elapsed: number) => void
-	private _onRepeatCallback?: (object: T) => void
-	private _onCompleteCallback?: (object: T) => void
-	private _onStopCallback?: (object: T) => void
+
 	private _id = Sequence.nextId()
 	private _isChainStopped = false
 
-	constructor(private _object: T, private _group: Group | false = mainGroup) {}
+	constructor(private _object: T, private _group: Group | false = mainGroup) {
+		super()
+	}
 
 	getId(): number {
 		return this._id
@@ -208,9 +205,7 @@ export class Tween<T extends UnknownProps> {
 
 		this._isPaused = false
 
-		if (this._onStopCallback) {
-			this._onStopCallback(this._object)
-		}
+		this.emit('onStop', this._object)
 
 		return this
 	}
@@ -302,33 +297,33 @@ export class Tween<T extends UnknownProps> {
 		return this
 	}
 
-	onStart(callback?: (object: T) => void): this {
-		this._onStartCallback = callback
+	onStart(callback: (object: T) => void): this {
+		this.addListener('onStart', callback)
 		return this
 	}
 
-	onEveryStart(callback?: (object: T) => void): this {
-		this._onEveryStartCallback = callback
+	onEveryStart(callback: (object: T) => void): this {
+		this.addListener('onEveryStart', callback)
 		return this
 	}
 
-	onUpdate(callback?: (object: T, elapsed: number) => void): this {
-		this._onUpdateCallback = callback
+	onUpdate(callback: (object: T, elapsed: number) => void): this {
+		this.addListener('onUpdate', callback)
 		return this
 	}
 
-	onRepeat(callback?: (object: T) => void): this {
-		this._onRepeatCallback = callback
+	onRepeat(callback: (object: T) => void): this {
+		this.addListener('onRepeat', callback)
 		return this
 	}
 
-	onComplete(callback?: (object: T) => void): this {
-		this._onCompleteCallback = callback
+	onComplete(callback: (object: T) => void): this {
+		this.addListener('onComplete', callback)
 		return this
 	}
 
-	onStop(callback?: (object: T) => void): this {
-		this._onStopCallback = callback
+	onStop(callback: (object: T) => void): this {
+		this.addListener('onStop', callback)
 		return this
 	}
 
@@ -359,18 +354,12 @@ export class Tween<T extends UnknownProps> {
 		}
 
 		if (this._onStartCallbackFired === false) {
-			if (this._onStartCallback) {
-				this._onStartCallback(this._object)
-			}
-
+			this.emit('onStart', this._object)
 			this._onStartCallbackFired = true
 		}
 
 		if (this._onEveryStartCallbackFired === false) {
-			if (this._onEveryStartCallback) {
-				this._onEveryStartCallback(this._object)
-			}
-
+			this.emit('onEveryStart', this._object)
 			this._onEveryStartCallbackFired = true
 		}
 
@@ -382,9 +371,7 @@ export class Tween<T extends UnknownProps> {
 		// properties transformations
 		this._updateProperties(this._object, this._valuesStart, this._valuesEnd, value)
 
-		if (this._onUpdateCallback) {
-			this._onUpdateCallback(this._object, elapsed)
-		}
+		this.emit('onUpdate', this._object, elapsed)
 
 		if (elapsed === 1) {
 			if (this._repeat > 0) {
@@ -418,17 +405,13 @@ export class Tween<T extends UnknownProps> {
 					this._startTime = time + this._delayTime
 				}
 
-				if (this._onRepeatCallback) {
-					this._onRepeatCallback(this._object)
-				}
+				this.emit('onRepeat', this._object)
 
 				this._onEveryStartCallbackFired = false
 
 				return true
 			} else {
-				if (this._onCompleteCallback) {
-					this._onCompleteCallback(this._object)
-				}
+				this.emit('onComplete', this._object)
 
 				for (let i = 0, numChainedTweens = this._chainedTweens.length; i < numChainedTweens; i++) {
 					// Make the chained tweens start exactly at the time they should,
