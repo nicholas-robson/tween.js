@@ -176,6 +176,9 @@ export const tests = {
 
 	'Return the same tween instance for method chaining'(test: Test): void {
 		const t = new TWEEN.Tween({})
+		const noop = () => {
+			/* noop*/
+		}
 
 		test.ok(t.to({}, 0) instanceof TWEEN.Tween)
 		test.equal(t.to({}, 0), t)
@@ -198,20 +201,20 @@ export const tests = {
 		test.ok(t.chain() instanceof TWEEN.Tween)
 		test.equal(t.chain(), t)
 
-		test.ok(t.onStart() instanceof TWEEN.Tween)
-		test.equal(t.onStart(), t)
+		test.ok(t.onStart(noop) instanceof TWEEN.Tween)
+		test.equal(t.onStart(noop), t)
 
-		test.ok(t.onEveryStart() instanceof TWEEN.Tween)
-		test.equal(t.onEveryStart(), t)
+		test.ok(t.onEveryStart(noop) instanceof TWEEN.Tween)
+		test.equal(t.onEveryStart(noop), t)
 
-		test.ok(t.onStop() instanceof TWEEN.Tween)
-		test.equal(t.onStop(), t)
+		test.ok(t.onStop(noop) instanceof TWEEN.Tween)
+		test.equal(t.onStop(noop), t)
 
-		test.ok(t.onUpdate() instanceof TWEEN.Tween)
-		test.equal(t.onUpdate(), t)
+		test.ok(t.onUpdate(noop) instanceof TWEEN.Tween)
+		test.equal(t.onUpdate(noop), t)
 
-		test.ok(t.onComplete() instanceof TWEEN.Tween)
-		test.equal(t.onComplete(), t)
+		test.ok(t.onComplete(noop) instanceof TWEEN.Tween)
+		test.equal(t.onComplete(noop), t)
 
 		test.ok(t.duration() instanceof TWEEN.Tween)
 		test.equal(t.duration(), t)
