@@ -1,5 +1,7 @@
-type EasingFunction = (amount: number) => number;
-type EasingFunctionGroup = {
+import EventEmitter from 'eventemitter3';
+
+declare type EasingFunction = (amount: number) => number;
+declare type EasingFunctionGroup = {
     In: EasingFunction;
     Out: EasingFunction;
     InOut: EasingFunction;
@@ -27,7 +29,7 @@ declare const Easing: Readonly<{
 /**
  *
  */
-type InterpolationFunction = (v: number[], k: number) => number;
+declare type InterpolationFunction = (v: number[], k: number) => number;
 /**
  *
  */
@@ -43,16 +45,7 @@ declare const Interpolation: {
     };
 };
 
-/**
- * Tween.js - Licensed under the MIT license
- * https://github.com/tweenjs/tween.js
- * ----------------------------------------------
- *
- * See https://github.com/tweenjs/tween.js/graphs/contributors for the full list of contributors.
- * Thank you all, you're awesome!
- */
-
-declare class Tween<T extends UnknownProps = any> {
+declare class Tween<T extends UnknownProps = any> extends EventEmitter {
     static autoStartOnUpdate: boolean;
     private _isPaused;
     private _pauseStart;
@@ -72,14 +65,8 @@ declare class Tween<T extends UnknownProps = any> {
     private _easingFunction;
     private _interpolationFunction;
     private _chainedTweens;
-    private _onStartCallback?;
     private _onStartCallbackFired;
-    private _onEveryStartCallback?;
     private _onEveryStartCallbackFired;
-    private _onUpdateCallback?;
-    private _onRepeatCallback?;
-    private _onCompleteCallback?;
-    private _onStopCallback?;
     private _id;
     private _isChainStopped;
     private _propertiesAreSetUp;
@@ -134,12 +121,12 @@ declare class Tween<T extends UnknownProps = any> {
     easing(easingFunction?: EasingFunction): this;
     interpolation(interpolationFunction?: InterpolationFunction): this;
     chain(...tweens: Array<Tween<any>>): this;
-    onStart(callback?: (object: T) => void): this;
-    onEveryStart(callback?: (object: T) => void): this;
-    onUpdate(callback?: (object: T, elapsed: number) => void): this;
-    onRepeat(callback?: (object: T) => void): this;
-    onComplete(callback?: (object: T) => void): this;
-    onStop(callback?: (object: T) => void): this;
+    onStart(callback: (object: T) => void): this;
+    onEveryStart(callback: (object: T) => void): this;
+    onUpdate(callback: (object: T, elapsed: number) => void): this;
+    onRepeat(callback: (object: T) => void): this;
+    onComplete(callback: (object: T) => void): this;
+    onStop(callback: (object: T) => void): this;
     private _goToEnd;
     /**
      * @returns true if the tween is still playing after the update, false
@@ -155,7 +142,7 @@ declare class Tween<T extends UnknownProps = any> {
     private _handleRelativeValue;
     private _swapEndStartRepeatValues;
 }
-type UnknownProps = Record<string, any>;
+declare type UnknownProps = Record<string, any>;
 
 /**
  * Controlling groups of tweens
@@ -442,7 +429,6 @@ declare const update: {
     (time?: number | undefined): void;
     (time?: number | undefined, preserve?: boolean | undefined): void;
 };
-
 declare const exports: {
     Easing: Readonly<{
         Linear: Readonly<EasingFunctionGroup & {
@@ -723,4 +709,5 @@ declare const exports: {
     };
 };
 
-export { Easing, Group, Interpolation, Sequence, Tween, VERSION, add, exports as default, getAll, nextId, now, remove, removeAll, setNow, update };
+export default exports;
+export { Easing, Group, Interpolation, Sequence, Tween, VERSION, add, getAll, nextId, now, remove, removeAll, setNow, update };

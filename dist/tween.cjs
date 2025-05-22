@@ -2,6 +2,12 @@
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
+var EventEmitter = require('eventemitter3');
+
+function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
+
+var EventEmitter__default = /*#__PURE__*/_interopDefaultLegacy(EventEmitter);
+
 /**
  * The Ease class provides a collection of easing functions for use with tween.js.
  */
@@ -423,48 +429,66 @@ var mainGroup = new Group();
  * See https://github.com/tweenjs/tween.js/graphs/contributors for the full list of contributors.
  * Thank you all, you're awesome!
  */
-var Tween = /** @class */ (function () {
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+var Tween = /** @class */ (function (_super) {
+    __extends(Tween, _super);
     function Tween(object, group) {
-        this._isPaused = false;
-        this._pauseStart = 0;
-        this._valuesStart = {};
-        this._valuesEnd = {};
-        this._valuesStartRepeat = {};
-        this._duration = 1000;
-        this._isDynamic = false;
-        this._initialRepeat = 0;
-        this._repeat = 0;
-        this._yoyo = false;
-        this._isPlaying = false;
-        this._reversed = false;
-        this._delayTime = 0;
-        this._startTime = 0;
-        this._easingFunction = Easing.Linear.None;
-        this._interpolationFunction = Interpolation.Linear;
+        var _this = _super.call(this) || this;
+        _this._isPaused = false;
+        _this._pauseStart = 0;
+        _this._valuesStart = {};
+        _this._valuesEnd = {};
+        _this._valuesStartRepeat = {};
+        _this._duration = 1000;
+        _this._isDynamic = false;
+        _this._initialRepeat = 0;
+        _this._repeat = 0;
+        _this._yoyo = false;
+        _this._isPlaying = false;
+        _this._reversed = false;
+        _this._delayTime = 0;
+        _this._startTime = 0;
+        _this._easingFunction = Easing.Linear.None;
+        _this._interpolationFunction = Interpolation.Linear;
         // eslint-disable-next-line
-        this._chainedTweens = [];
-        this._onStartCallbackFired = false;
-        this._onEveryStartCallbackFired = false;
-        this._id = Sequence.nextId();
-        this._isChainStopped = false;
-        this._propertiesAreSetUp = false;
-        this._goToEnd = false;
-        this._object = object;
-        if (typeof group === 'object') {
-            this._group = group;
-            group.add(this);
+        _this._chainedTweens = [];
+        _this._onStartCallbackFired = false;
+        _this._onEveryStartCallbackFired = false;
+        _this._id = Sequence.nextId();
+        _this._isChainStopped = false;
+        _this._propertiesAreSetUp = false;
+        _this._goToEnd = false;
+        _this._object = object;
+        if (typeof group === "object") {
+            _this._group = group;
+            group.add(_this);
         }
         // Use "true" to restore old behavior (will be removed in future release).
         else if (group === true) {
-            this._group = mainGroup;
-            mainGroup.add(this);
+            _this._group = mainGroup;
+            mainGroup.add(_this);
         }
+        return _this;
     }
     Tween.prototype.getId = function () {
         return this._id;
     };
     Tween.prototype.getCompleteCallback = function () {
-        return this._onCompleteCallback;
+        return this.listeners("onComplete").length > 0
+            ? this.listeners("onComplete")[0]
+            : undefined;
     };
     Tween.prototype.isPlaying = function () {
         return this._isPlaying;
@@ -478,7 +502,7 @@ var Tween = /** @class */ (function () {
     Tween.prototype.to = function (target, duration) {
         if (duration === void 0) { duration = 1000; }
         if (this._isPlaying)
-            throw new Error('Can not call Tween.to() while Tween is already started or paused. Stop the Tween first.');
+            throw new Error("Can not call Tween.to() while Tween is already started or paused. Stop the Tween first.");
         this._valuesEnd = target;
         this._propertiesAreSetUp = false;
         this._duration = duration < 0 ? 0 : duration;
@@ -537,11 +561,11 @@ var Tween = /** @class */ (function () {
         for (var property in _valuesEnd) {
             var startValue = _object[property];
             var startValueIsArray = Array.isArray(startValue);
-            var propType = startValueIsArray ? 'array' : typeof startValue;
+            var propType = startValueIsArray ? "array" : typeof startValue;
             var isInterpolationList = !startValueIsArray && Array.isArray(_valuesEnd[property]);
             // If `to()` specifies a property that doesn't exist in the source object,
             // we should not set that property in the object
-            if (propType === 'undefined' || propType === 'function') {
+            if (propType === "undefined" || propType === "function") {
                 continue;
             }
             // Check if an Array was provided as property value
@@ -557,7 +581,7 @@ var Tween = /** @class */ (function () {
                     var value = this._handleRelativeValue(startValue, endValues[i]);
                     if (isNaN(value)) {
                         isInterpolationList = false;
-                        console.warn('Found invalid interpolation list. Skipping.');
+                        console.warn("Found invalid interpolation list. Skipping.");
                         break;
                     }
                     temp.push(value);
@@ -569,7 +593,9 @@ var Tween = /** @class */ (function () {
                 }
             }
             // handle the deepness of the values
-            if ((propType === 'object' || startValueIsArray) && startValue && !isInterpolationList) {
+            if ((propType === "object" || startValueIsArray) &&
+                startValue &&
+                !isInterpolationList) {
                 _valuesStart[property] = startValueIsArray ? [] : {};
                 var nestedObject = startValue;
                 for (var prop in nestedObject) {
@@ -589,7 +615,8 @@ var Tween = /** @class */ (function () {
             }
             else {
                 // Save the starting value, but only once unless override is requested.
-                if (typeof _valuesStart[property] === 'undefined' || overrideStartingValues) {
+                if (typeof _valuesStart[property] === "undefined" ||
+                    overrideStartingValues) {
                     _valuesStart[property] = startValue;
                 }
                 if (!startValueIsArray) {
@@ -618,9 +645,7 @@ var Tween = /** @class */ (function () {
         }
         this._isPlaying = false;
         this._isPaused = false;
-        if (this._onStopCallback) {
-            this._onStopCallback(this._object);
-        }
+        this.emit("onStop", this._object);
         return this;
     };
     Tween.prototype.end = function () {
@@ -655,7 +680,7 @@ var Tween = /** @class */ (function () {
     };
     Tween.prototype.group = function (group) {
         if (!group) {
-            console.warn('tween.group() without args has been removed, use group.add(tween) instead.');
+            console.warn("tween.group() without args has been removed, use group.add(tween) instead.");
             return this;
         }
         group.add(this);
@@ -709,27 +734,27 @@ var Tween = /** @class */ (function () {
         return this;
     };
     Tween.prototype.onStart = function (callback) {
-        this._onStartCallback = callback;
+        this.addListener("onStart", callback);
         return this;
     };
     Tween.prototype.onEveryStart = function (callback) {
-        this._onEveryStartCallback = callback;
+        this.addListener("onEveryStart", callback);
         return this;
     };
     Tween.prototype.onUpdate = function (callback) {
-        this._onUpdateCallback = callback;
+        this.addListener("onUpdate", callback);
         return this;
     };
     Tween.prototype.onRepeat = function (callback) {
-        this._onRepeatCallback = callback;
+        this.addListener("onRepeat", callback);
         return this;
     };
     Tween.prototype.onComplete = function (callback) {
-        this._onCompleteCallback = callback;
+        this.addListener("onComplete", callback);
         return this;
     };
     Tween.prototype.onStop = function (callback) {
-        this._onStopCallback = callback;
+        this.addListener("onStop", callback);
         return this;
     };
     /**
@@ -760,15 +785,11 @@ var Tween = /** @class */ (function () {
             return true;
         }
         if (this._onStartCallbackFired === false) {
-            if (this._onStartCallback) {
-                this._onStartCallback(this._object);
-            }
+            this.emit("onStart", this._object);
             this._onStartCallbackFired = true;
         }
         if (this._onEveryStartCallbackFired === false) {
-            if (this._onEveryStartCallback) {
-                this._onEveryStartCallback(this._object);
-            }
+            this.emit("onEveryStart", this._object);
             this._onEveryStartCallbackFired = true;
         }
         var elapsedTime = time - this._startTime;
@@ -794,9 +815,7 @@ var Tween = /** @class */ (function () {
         var value = this._easingFunction(elapsed);
         // properties transformations
         this._updateProperties(this._object, this._valuesStart, this._valuesEnd, value);
-        if (this._onUpdateCallback) {
-            this._onUpdateCallback(this._object, elapsed);
-        }
+        this.emit("onUpdate", this._object, elapsed);
         if (this._duration === 0 || elapsedTime >= this._duration) {
             if (this._repeat > 0) {
                 var completeCount = Math.min(Math.trunc((elapsedTime - this._duration) / durationAndDelay) + 1, this._repeat);
@@ -805,7 +824,7 @@ var Tween = /** @class */ (function () {
                 }
                 // Reassign starting values, restart by making startTime = now
                 for (property in this._valuesStartRepeat) {
-                    if (!this._yoyo && typeof this._valuesEnd[property] === 'string') {
+                    if (!this._yoyo && typeof this._valuesEnd[property] === "string") {
                         this._valuesStartRepeat[property] =
                             // eslint-disable-next-line
                             // @ts-ignore FIXME?
@@ -820,16 +839,12 @@ var Tween = /** @class */ (function () {
                     this._reversed = !this._reversed;
                 }
                 this._startTime += durationAndDelay * completeCount;
-                if (this._onRepeatCallback) {
-                    this._onRepeatCallback(this._object);
-                }
+                this.emit("onRepeat", this._object);
                 this._onEveryStartCallbackFired = false;
                 return true;
             }
             else {
-                if (this._onCompleteCallback) {
-                    this._onCompleteCallback(this._object);
-                }
+                this.emit("onComplete", this._object);
                 for (var i = 0, numChainedTweens = this._chainedTweens.length; i < numChainedTweens; i++) {
                     // Make the chained tweens start exactly at the time they should,
                     // even if the `update()` method was called way past the duration of the tween
@@ -855,7 +870,7 @@ var Tween = /** @class */ (function () {
             if (isInterpolationList) {
                 _object[property] = this._interpolationFunction(end, value);
             }
-            else if (typeof end === 'object' && end) {
+            else if (typeof end === "object" && end) {
                 // eslint-disable-next-line
                 // @ts-ignore FIXME?
                 this._updateProperties(_object[property], start, end, value);
@@ -864,7 +879,7 @@ var Tween = /** @class */ (function () {
                 // Parses relative end values with start as base (e.g.: +10, -3)
                 end = this._handleRelativeValue(start, end);
                 // Protect against non numeric properties.
-                if (typeof end === 'number') {
+                if (typeof end === "number") {
                     // eslint-disable-next-line
                     // @ts-ignore FIXME?
                     _object[property] = start + (end - start) * value;
@@ -873,10 +888,10 @@ var Tween = /** @class */ (function () {
         }
     };
     Tween.prototype._handleRelativeValue = function (start, end) {
-        if (typeof end !== 'string') {
+        if (typeof end !== "string") {
             return end;
         }
-        if (end.charAt(0) === '+' || end.charAt(0) === '-') {
+        if (end.charAt(0) === "+" || end.charAt(0) === "-") {
             return start + parseFloat(end);
         }
         return parseFloat(end);
@@ -884,8 +899,9 @@ var Tween = /** @class */ (function () {
     Tween.prototype._swapEndStartRepeatValues = function (property) {
         var tmp = this._valuesStartRepeat[property];
         var endValue = this._valuesEnd[property];
-        if (typeof endValue === 'string') {
-            this._valuesStartRepeat[property] = this._valuesStartRepeat[property] + parseFloat(endValue);
+        if (typeof endValue === "string") {
+            this._valuesStartRepeat[property] =
+                this._valuesStartRepeat[property] + parseFloat(endValue);
         }
         else {
             this._valuesStartRepeat[property] = this._valuesEnd[property];
@@ -894,7 +910,7 @@ var Tween = /** @class */ (function () {
     };
     Tween.autoStartOnUpdate = false;
     return Tween;
-}());
+}(EventEmitter__default['default']));
 
 var VERSION = '25.0.0';
 
