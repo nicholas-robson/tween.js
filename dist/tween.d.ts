@@ -1,7 +1,7 @@
 import EventEmitter from 'eventemitter3';
 
-declare type EasingFunction = (amount: number) => number;
-declare type EasingFunctionGroup = {
+type EasingFunction = (amount: number) => number;
+type EasingFunctionGroup = {
     In: EasingFunction;
     Out: EasingFunction;
     InOut: EasingFunction;
@@ -29,7 +29,7 @@ declare const Easing: Readonly<{
 /**
  *
  */
-declare type InterpolationFunction = (v: number[], k: number) => number;
+type InterpolationFunction = (v: number[], k: number) => number;
 /**
  *
  */
@@ -44,6 +44,15 @@ declare const Interpolation: {
         CatmullRom: (p0: number, p1: number, p2: number, p3: number, t: number) => number;
     };
 };
+
+/**
+ * Tween.js - Licensed under the MIT license
+ * https://github.com/tweenjs/tween.js
+ * ----------------------------------------------
+ *
+ * See https://github.com/tweenjs/tween.js/graphs/contributors for the full list of contributors.
+ * Thank you all, you're awesome!
+ */
 
 declare class Tween<T extends UnknownProps = any> extends EventEmitter {
     static autoStartOnUpdate: boolean;
@@ -142,7 +151,7 @@ declare class Tween<T extends UnknownProps = any> extends EventEmitter {
     private _handleRelativeValue;
     private _swapEndStartRepeatValues;
 }
-declare type UnknownProps = Record<string, any>;
+type UnknownProps = Record<string, any>;
 
 /**
  * Controlling groups of tweens
@@ -429,6 +438,7 @@ declare const update: {
     (time?: number | undefined): void;
     (time?: number | undefined, preserve?: boolean | undefined): void;
 };
+
 declare const exports: {
     Easing: Readonly<{
         Linear: Readonly<EasingFunctionGroup & {
@@ -709,5 +719,4 @@ declare const exports: {
     };
 };
 
-export default exports;
-export { Easing, Group, Interpolation, Sequence, Tween, VERSION, add, getAll, nextId, now, remove, removeAll, setNow, update };
+export { Easing, Group, Interpolation, Sequence, Tween, VERSION, add, exports as default, getAll, nextId, now, remove, removeAll, setNow, update };

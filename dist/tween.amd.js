@@ -1,8 +1,4 @@
-define(['exports', 'eventemitter3'], function (exports, EventEmitter) { 'use strict';
-
-    function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
-
-    var EventEmitter__default = /*#__PURE__*/_interopDefaultLegacy(EventEmitter);
+define(['exports', 'eventemitter3'], (function (exports, EventEmitter) { 'use strict';
 
     /**
      * The Ease class provides a collection of easing functions for use with tween.js.
@@ -433,6 +429,8 @@ define(['exports', 'eventemitter3'], function (exports, EventEmitter) { 'use str
             return extendStatics(d, b);
         };
         return function (d, b) {
+            if (typeof b !== "function" && b !== null)
+                throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
             extendStatics(d, b);
             function __() { this.constructor = d; }
             d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
@@ -906,7 +904,7 @@ define(['exports', 'eventemitter3'], function (exports, EventEmitter) { 'use str
         };
         Tween.autoStartOnUpdate = false;
         return Tween;
-    }(EventEmitter__default['default']));
+    }(EventEmitter));
 
     var VERSION = '25.0.0';
 
@@ -1440,4 +1438,4 @@ define(['exports', 'eventemitter3'], function (exports, EventEmitter) { 'use str
 
     Object.defineProperty(exports, '__esModule', { value: true });
 
-});
+}));

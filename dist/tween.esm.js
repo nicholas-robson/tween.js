@@ -429,6 +429,8 @@ var __extends = (this && this.__extends) || (function () {
         return extendStatics(d, b);
     };
     return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
         extendStatics(d, b);
         function __() { this.constructor = d; }
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
@@ -1418,5 +1420,4 @@ var exports = {
     update: update,
 };
 
-export default exports;
-export { Easing, Group, Interpolation, Sequence, Tween, VERSION, add, getAll, nextId, now, remove, removeAll, setNow, update };
+export { Easing, Group, Interpolation, Sequence, Tween, VERSION, add, exports as default, getAll, nextId, now, remove, removeAll, setNow, update };

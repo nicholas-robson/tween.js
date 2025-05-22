@@ -9,8 +9,6 @@
 		"target": "es5",
 		"moduleResolution": "node",
 		"lib": ["dom", "es2015"],
-
-		"importsNotUsedAsValues": "error"
 	},
 	"exclude": ["node_modules", "examples"]
 }

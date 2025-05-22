@@ -2,11 +2,7 @@
     typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('eventemitter3')) :
     typeof define === 'function' && define.amd ? define(['exports', 'eventemitter3'], factory) :
     (global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global.TWEEN = {}, global.EventEmitter));
-}(this, (function (exports, EventEmitter) { 'use strict';
-
-    function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
-
-    var EventEmitter__default = /*#__PURE__*/_interopDefaultLegacy(EventEmitter);
+})(this, (function (exports, EventEmitter) { 'use strict';
 
     /**
      * The Ease class provides a collection of easing functions for use with tween.js.
@@ -437,6 +433,8 @@
             return extendStatics(d, b);
         };
         return function (d, b) {
+            if (typeof b !== "function" && b !== null)
+                throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
             extendStatics(d, b);
             function __() { this.constructor = d; }
             d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
@@ -910,7 +908,7 @@
         };
         Tween.autoStartOnUpdate = false;
         return Tween;
-    }(EventEmitter__default['default']));
+    }(EventEmitter));
 
     var VERSION = '25.0.0';
 
@@ -1444,4 +1442,4 @@
 
     Object.defineProperty(exports, '__esModule', { value: true });
 
-})));
+}));
